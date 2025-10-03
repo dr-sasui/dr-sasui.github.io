@@ -364,7 +364,12 @@
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
 
-        <form action="forms/appointment.php" method="post" role="form" class="php-email-form">
+        <form action="#" method="post" role="form" class="php-email-form" id="appointmentForm">
+          <!-- Hidden field to specify recipient -->
+          <input type="hidden" name="_to" value="sassikhn@gmail.com">
+          <input type="hidden" name="_subject" value="New Appointment Request - Dr. Sasui">
+          <input type="hidden" name="_next" value="https://dr-sasui.github.io/index.html#appointment">
+          
           <div class="row">
             <div class="col-md-4 form-group">
               <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" required="">
@@ -948,7 +953,12 @@
           </div>
 
           <div class="col-lg-8">
-            <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
+            <form action="#" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200" id="contactForm">
+              <!-- Hidden fields for contact form -->
+              <input type="hidden" name="_to" value="sassikhn@gmail.com">
+              <input type="hidden" name="_subject" value="New Contact Message - Dr. Sasui">
+              <input type="hidden" name="_next" value="https://dr-sasui.github.io/index.html#contact">
+              
               <div class="row gy-4">
 
                 <div class="col-md-6">
@@ -1075,6 +1085,9 @@
   <!-- Preloader -->
   <div id="preloader"></div>
 
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+  
   <!-- Vendor JS Files -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="assets/vendor/php-email-form/validate.js"></script>
@@ -1085,6 +1098,100 @@
 
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
+  
+  <!-- Email Form Handler -->
+  <script>
+    // Initialize EmailJS
+    emailjs.init('YOUR_PUBLIC_KEY'); // You'll need to replace this with actual EmailJS public key
+    
+    // Handle appointment form submission
+    document.addEventListener('DOMContentLoaded', function() {
+      const appointmentForm = document.getElementById('appointmentForm');
+      if (appointmentForm) {
+        appointmentForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const formData = new FormData(this);
+          const templateParams = {
+            to_email: 'sassikhn@gmail.com',
+            from_name: formData.get('name'),
+            from_email: formData.get('email'),
+            phone: formData.get('phone'),
+            date: formData.get('date'),
+            department: formData.get('department'),
+            doctor: formData.get('doctor'),
+            message: formData.get('message') || 'No additional message',
+            subject: 'New Appointment Request'
+          };
+          
+          // Show loading
+          const loading = this.querySelector('.loading');
+          const errorMsg = this.querySelector('.error-message');
+          const successMsg = this.querySelector('.sent-message');
+          
+          loading.style.display = 'block';
+          errorMsg.style.display = 'none';
+          successMsg.style.display = 'none';
+          
+          // Send email using EmailJS (you'll need to set up EmailJS service)
+          // For now, let's use a simple mailto approach
+          const subject = encodeURIComponent('New Appointment Request - Dr. Sasui');
+          const body = encodeURIComponent(
+            `Name: ${templateParams.from_name}\n` +
+            `Email: ${templateParams.from_email}\n` +
+            `Phone: ${templateParams.phone}\n` +
+            `Date: ${templateParams.date}\n` +
+            `Department: ${templateParams.department}\n` +
+            `Doctor: ${templateParams.doctor}\n` +
+            `Message: ${templateParams.message}`
+          );
+          
+          // Create mailto link
+          const mailtoLink = `mailto:sassikhn@gmail.com?subject=${subject}&body=${body}`;
+          
+          // Open email client
+          window.location.href = mailtoLink;
+          
+          // Show success message
+          setTimeout(() => {
+            loading.style.display = 'none';
+            successMsg.style.display = 'block';
+          }, 1000);
+        });
+      }
+      
+      // Handle contact form submission
+      const contactForm = document.getElementById('contactForm');
+      if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const formData = new FormData(this);
+          const subject = encodeURIComponent('New Contact Message - Dr. Sasui');
+          const body = encodeURIComponent(
+            `Name: ${formData.get('name')}\n` +
+            `Email: ${formData.get('email')}\n` +
+            `Subject: ${formData.get('subject')}\n` +
+            `Message: ${formData.get('message')}`
+          );
+          
+          const mailtoLink = `mailto:sassikhn@gmail.com?subject=${subject}&body=${body}`;
+          window.location.href = mailtoLink;
+          
+          // Show success message
+          const loading = this.querySelector('.loading');
+          const errorMsg = this.querySelector('.error-message');
+          const successMsg = this.querySelector('.sent-message');
+          
+          loading.style.display = 'block';
+          setTimeout(() => {
+            loading.style.display = 'none';
+            successMsg.style.display = 'block';
+          }, 1000);
+        });
+      }
+    });
+  </script>
 
 </body>
 
